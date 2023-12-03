@@ -6,6 +6,7 @@ from aiogram import Dispatcher, Bot
 from aiogram.enums import ParseMode
 from aiogram.types import Message
 from aiogram.filters import CommandStart, Command
+from aiogram.utils.markdown import link
 from config import settings
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
@@ -16,7 +17,14 @@ days_of_week = {i: [] for i in days}
 
 @dp.message(CommandStart())
 async def start(message: Message):
-    await message.answer("Hello, I'm To Do bot, here you can make a schedule for the week, leave some global goals")
+    help_button = KeyboardButton(text='Помощь')
+    add_to_schedule_button = KeyboardButton(text='Добавить план')
+    global_button = KeyboardButton(text='Глобальные цели')
+    day_button = KeyboardButton(text='Расписание на день')
+    all_button = KeyboardButton(text='Расписание на неделю')
+    start_buttons = [[help_button, all_button, global_button, add_to_schedule_button, day_button]]
+    start_keyboard = ReplyKeyboardMarkup(keyboard=start_buttons, resize_keyboard=True)
+    await message.answer("Hello, I'm To Do bot, here you can make a schedule for the week, leave some global goals", reply_markup=start_keyboard)
 
 
 @dp.message(Command("mn"))
@@ -71,7 +79,9 @@ b6 = KeyboardButton(text='Суббота')
 b7 = KeyboardButton(text='Воскресенье')
 @dp.message(Command("help"))
 async def help_info(message: Message):
-    text = "If u have problems with bot, send the message to "
+    text = "If you have problems with the bot, send message to "
+    l = link('turtle', 'https://t.me/turttIe')
+    await message.answer(text=text+l, parse_mode=ParseMode.MARKDOWN_V2)
 
 
 keybord_buttons = [[b1, b2, b3, b4, b5, b6, b7]]
@@ -89,8 +99,6 @@ async def show_all_schedule(message: Message):
 @dp.message(Command("add"))
 async def add_to_schedule(message: Message):
     await message.answer("Choose the day", reply_markup=keyboard)
-
-
 
 async def main():
     bot = Bot(token=settings.bot_token)
